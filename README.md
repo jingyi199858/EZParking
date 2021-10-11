@@ -5,7 +5,7 @@ How to run server
 
 	pip3 install -r requirements.txt
 
-Go to /map_locator/mapproject
+Go to django_project/map_locator/mapproject
 
 	python3 manage.py runserver
 
