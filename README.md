@@ -3,12 +3,14 @@ This project is a parking sharing app, running on web
 
 How to run server
 
-	pip3 install -r requirements.txt
+Go to backend
 
-Go to django_project/map_locator/mapproject
+yarn install
+yarn start
 
-	python3 manage.py runserver
+Start another ternimal
 
-In your ngrok directory
+Go to frontend
 
-	ngrok http 8000
+yarn install
+yarn start
