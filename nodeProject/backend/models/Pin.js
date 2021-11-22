@@ -5,7 +5,7 @@ const PinSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
-    title: {
+    street: {
         type: String,
         require: true,
         min: 3
@@ -13,12 +13,6 @@ const PinSchema = new mongoose.Schema({
     desc: {
         type: String,
         reuiqre: true,
-    },
-    rating: {
-        type: Number,
-        require: true,
-        min: 0,
-        max: 5,
     },
     lat: {
         type: Number,

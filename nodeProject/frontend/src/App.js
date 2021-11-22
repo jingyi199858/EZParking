@@ -14,7 +14,7 @@ function App() {
   const [pins,setPins] = useState([]);
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
-  const [title, setTitle] = useState(null);
+  const [street, setStreet] = useState(null);
   const [desc, setDesc] = useState(null);
   const [rating, setRating] = useState(0);
   const [showRegister, setShowRegister] = useState(false);
@@ -55,7 +55,7 @@ function App() {
     e.preventDefault();
     const newPin = {
       username: currentUser,
-      title,
+      street,
       desc,
       rating,
       lat: newPlace.lat,
@@ -86,17 +86,18 @@ function App() {
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}
       width="100%"
       height="100%"
-      onViewportChange={nextViewport => setViewport(nextViewport)}
-      mapStyle="mapbox://styles/mapbox/streets-v11"
-      onDblClick = {handleAddClick}
-      // dragPan="false"
-      // touchAction="pan-y"
+      mapStyle="mapbox://styles/safak/cknndpyfq268f17p53nmpwira"
+      onViewportChange={(viewport) => setViewport(viewport)}
+      onDblClick={handleAddClick}
+      doubleClickZoom={false}
+      dragPan="false"
+      touchAction="pan-y"
     >
 
       {pins.map(p=>(
     <>
       
-      <Marker latitude={p.lat} longitude={p.long} offsetLeft={-25.35} offsetTop={-45}>
+      <Marker latitude={p.lat} longitude={p.long} offsetLeft={-25} offsetTop={50}>
         <Room style={{ fontSize: viewport.zoom * 3, color: p.username === currentUser ? "tomato" :"slateblue",
          cursor:"pointer", 
         }}
@@ -114,13 +115,9 @@ function App() {
         >
           <div className="card">
             <label>Street</label>
-            <h4 className="place">{p.title}</h4>
+            <h4 className="place">{p.street}</h4>
             <label>Desc</label>
             <p  className="desc">{p.desc}</p>
-            <label>Difficulty</label>
-            <div className="stars">
-              {Array(p.rating).fill(<Star className="star" />)}
-            </div>
             <label>Information</label>
             <span className="username">Created by <b>{p.username}</b></span>
             <span className="date">{format(p.createdAt)}</span>
@@ -141,17 +138,9 @@ function App() {
         <div>
           <form onSubmit={handleSubmit}>
             <label>Street</label>
-            <input placeholder="Enter Title" onChange={(e)=>setTitle(e.target.value)}/>
+            <input placeholder="Enter Street" onChange={(e)=>setStreet(e.target.value)}/>
             <label>Desc</label>
             <textarea placeholder="Say something about it" onChange={(e)=>setDesc(e.target.value)}/>
-            <label>Difficulty</label>
-            <select onChange={(e)=>setRating(e.target.value)}>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-            </select>
             <button className="submitButton" type="submit">Add Pin</button>
           </form>
         </div>
