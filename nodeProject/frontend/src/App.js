@@ -1,14 +1,30 @@
+import "mapbox-gl/dist/mapbox-gl.css";
+import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import ReactMapGL, {Marker, Popup, GeolocateControl} from 'react-map-gl';
-import {Room, Star} from "@material-ui/icons"
+import { useEffect } from 'react';
+import { useState, useRef, useCallback } from "react";
+import { render } from "react-dom";
+import MapGL from "react-map-gl";
+import Geocoder from "react-map-gl-geocoder";
+import ReactMapGL, {Marker, Popup, GeolocateControl, NavigationControl} from 'react-map-gl';
+import CityPin from "./city_pins";
 import "./app.css";
 import axios from "axios";
 import {format} from "timeago.js"
 import Register from './components/Register';
 import Login from './components/Login'
 
-function App() {
+const navControlStyle = {
+  top : 50,
+  left : 10
+}
+
+const geoLocateStyle = {
+  top : 10,
+  left : 10
+}
+
+const App = () => {
   const myStorage = window.localStorage;
   const [currentUser, setCurrentUser] = useState(myStorage.getItem("user"));
   const [pins,setPins] = useState([]);
@@ -24,6 +40,24 @@ function App() {
     longitude: -74.02553887611165,
     zoom: 14
   });
+  const mapRef = useRef();
+  const handleViewportChange = useCallback(
+    (newViewport) => setViewport(newViewport),
+    []
+  );
+
+  // if you are happy with Geocoder default settings, you can just use handleViewportChange directly
+  const handleGeocoderViewportChange = useCallback(
+    (newViewport) => {
+      const geocoderDefaultOverrides = { transitionDuration: 1000 };
+
+      return handleViewportChange({
+        ...newViewport,
+        ...geocoderDefaultOverrides
+      });
+    },
+    [handleViewportChange]
+  );
 
   useEffect(()=>{
     const getPins = async ()=>{
@@ -77,31 +111,42 @@ function App() {
     setCurrentUser(null);
   };
 
-
+  const SIZE = 20;
+  const UNIT = "px";
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
       <ReactMapGL
-      {...viewport}
-      mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}
-      width="100%"
-      height="100%"
-      mapStyle="mapbox://styles/safak/cknndpyfq268f17p53nmpwira"
-      onViewportChange={(viewport) => setViewport(viewport)}
-      onDblClick={handleAddClick}
-      doubleClickZoom={false}
-      dragPan="false"
-      touchAction="pan-y"
-    >
+        ref={mapRef}
+        {...viewport}
+        mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}
+        width="100%"
+        height="100%"
+        mapStyle="mapbox://styles/safak/cknndpyfq268f17p53nmpwira"
+        //onViewportChange={(viewport) => setViewport(viewport)}
+        onDblClick={handleAddClick}
+        doubleClickZoom={false}
+        dragPan="false"
+        touchAction="pan-y"
+        onViewportChange={handleViewportChange}
+      >
+        <Geocoder
+          mapRef={mapRef}
+          onViewportChange={handleGeocoderViewportChange}
+          mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}
+          position="bottom-left"
+        />
+      <GeolocateControl 
+        style={geoLocateStyle}
+        auto
+        />
+      <NavigationControl style={navControlStyle}/>
 
       {pins.map(p=>(
     <>
       
-      <Marker latitude={p.lat} longitude={p.long} offsetLeft={-25} offsetTop={50}>
-        <Room style={{ fontSize: viewport.zoom * 3, color: p.username === currentUser ? "tomato" :"slateblue",
-         cursor:"pointer", 
-        }}
-        onClick={()=>handleMarkerClick(p._id, p.lat, p.long)}
+      <Marker latitude={p.lat} longitude={p.long}>
+        <CityPin size={20} onClick={()=>handleMarkerClick(p._id, p.lat, p.long)}
         />
       </Marker>
       {p._id === currentPlaceId &&(
@@ -118,8 +163,9 @@ function App() {
             <h4 className="place">{p.street}</h4>
             <label>Desc</label>
             <p  className="desc">{p.desc}</p>
-            <label>Information</label>
-            <span className="username">Created by <b>{p.username}</b></span>
+            <p className="rating">{p.rating}</p>
+            <label>Rating (Do you think it's useful?)</label>
+            <span className="username">Created by <b>{p.username ? (p.username) : ("Someone around")}</b></span>
             <span className="date">{format(p.createdAt)}</span>
           </div>
         </Popup>
@@ -160,9 +206,10 @@ function App() {
           setCurrentUser={setCurrentUser}
         />
         )}
-    </ReactMapGL>
+      </ReactMapGL>
     </div>
   );
-}
+};
 
+//render(<App />, document.getElementById("root"));
 export default App;
