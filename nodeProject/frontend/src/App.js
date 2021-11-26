@@ -13,6 +13,7 @@ import axios from "axios";
 import {format} from "timeago.js"
 import Register from './components/Register';
 import Login from './components/Login'
+import { ThumbUp } from "@material-ui/icons";
 
 const navControlStyle = {
   top : 50,
@@ -23,6 +24,8 @@ const geoLocateStyle = {
   top : 10,
   left : 10
 }
+
+const new_york_city_opendata = "https://data.cityofnewyork.us/resource/tapx-gr7a.json"
 
 const App = () => {
   const myStorage = window.localStorage;
@@ -163,8 +166,8 @@ const App = () => {
             <h4 className="place">{p.street}</h4>
             <label>Desc</label>
             <p  className="desc">{p.desc}</p>
-            <p className="rating">{p.rating}</p>
             <label>Rating (Do you think it's useful?)</label>
+            <p className="rating">{p.rating}</p>
             <span className="username">Created by <b>{p.username ? (p.username) : ("Someone around")}</b></span>
             <span className="date">{format(p.createdAt)}</span>
           </div>
@@ -178,7 +181,7 @@ const App = () => {
           longitude={newPlace.long}
           closeButton={true}
           closeOnClick={true}
-          anchor="bottom" 
+          anchor="top" 
           onClose={()=>setNewPlace(null)}
         >
         <div>
