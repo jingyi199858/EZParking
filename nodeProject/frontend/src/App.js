@@ -202,8 +202,7 @@ const App = () => {
                   );
                   setViewport({
                     ...viewport,
-                    lat,
-                    long,
+                    latitude:lat, longitude: long,
                     zoom: expansionZoom,
                     transitionInterpolator: new FlyToInterpolator({
                       speed:2
