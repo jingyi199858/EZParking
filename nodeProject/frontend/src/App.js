@@ -248,12 +248,13 @@ const App = () => {
           onClose={()=>setCurrentPlaceId(null)}
         >
           <div className="card">
-            <label>Street</label>
+            <label>Street(What is the Street Name?)</label>
             <h4 className="place">{p.street}</h4>
-            <label>Desc</label>
+            <label>Desc(Parking available?)</label>
             <p  className="desc">{p.desc}</p>
-            <label>Rating (Do you think it's useful?)</label>
-            <p className="rating">{p.rating}</p>
+            {/* <label>Rating (Do you think it's useful?)</label>
+            <p className="rating">{p.rating}</p> */}
+            <label>Information</label>
             <span className="username">Created by <b>{p.username ? (p.username) : ("Someone around")}</b></span>
             <span className="date">{format(p.createdAt)}</span>
           </div>
