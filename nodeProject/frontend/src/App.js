@@ -6,14 +6,18 @@ import { useState, useRef, useCallback } from "react";
 import { render } from "react-dom";
 import MapGL from "react-map-gl";
 import Geocoder from "react-map-gl-geocoder";
-import ReactMapGL, {Marker, Popup, GeolocateControl, NavigationControl} from 'react-map-gl';
+import ReactMapGL, {Marker, Popup, GeolocateControl, NavigationControl, FlyToInterpolator} from 'react-map-gl';
 import CityPin from "./city_pins";
 import "./app.css";
 import axios from "axios";
-import {format} from "timeago.js"
+import {format} from "timeago.js";
 import Register from './components/Register';
-import Login from './components/Login'
-import { ThumbUp } from "@material-ui/icons";
+import Login from './components/Login';
+//import { ThumbUp } from "@material-ui/icons";
+import useSwr from "swr";
+import useSupercluster from "use-supercluster"
+
+const fetcher = (...args) => fetch(...args).then(response => response.json());
 
 const navControlStyle = {
   top : 50,
@@ -25,7 +29,6 @@ const geoLocateStyle = {
   left : 10
 }
 
-const new_york_city_opendata = "https://data.cityofnewyork.us/resource/tapx-gr7a.json"
 
 const App = () => {
   const myStorage = window.localStorage;
@@ -48,6 +51,39 @@ const App = () => {
     (newViewport) => setViewport(newViewport),
     []
   );
+
+
+  //const url = "https://data.cityofnewyork.us/resource/tapx-gr7a.json";
+  const url = "https://data.cityofnewyork.us/api/geospatial/5jsj-cq4s?method=export&format=GeoJSON"
+  const { data, error} = useSwr(url, fetcher);
+  const points = data && !error ? data.features : [];
+  const nyc_pins = points.map(point => ({
+      type: "Feature",
+      properties: {
+        cluster: false,
+        pinId: point.id
+      },
+      geometry: { type: "Point", 
+      coordinates: [parseFloat(point.properties.long), parseFloat(point.properties.lat)] 
+    }
+  }));
+
+  //get bounds
+  const bounds = mapRef.current
+    ? mapRef.current
+        .getMap()
+        .getBounds()
+        .toArray()
+        .flat()
+    : null;
+
+  //get cluster
+  const { clusters, supercluster } = useSupercluster({
+    points,
+    bounds,
+    zoom: viewport.zoom,
+    options: { radius: 75, maxZoom: 20 }
+  });
 
   // if you are happy with Geocoder default settings, you can just use handleViewportChange directly
   const handleGeocoderViewportChange = useCallback(
@@ -122,6 +158,7 @@ const App = () => {
       <ReactMapGL
         ref={mapRef}
         {...viewport}
+        maxZoom={20}
         mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}
         width="100%"
         height="100%"
@@ -141,15 +178,64 @@ const App = () => {
         />
       <GeolocateControl 
         style={geoLocateStyle}
-        auto
         />
       <NavigationControl style={navControlStyle}/>
+
+      {clusters.map(cluster =>{
+        const [long, lat] = cluster.geometry.coordinates;
+        const {
+          cluster: isCluster, 
+          point_count: pointCount} = cluster.properties;
+
+        if (isCluster) {
+          return (
+            <Marker 
+              key={cluster.id} 
+              latitude={lat} 
+              longitude={long}
+            >
+              <div 
+                className="cluster-marker"
+                onClick={() =>{
+                  const expansionZoom = Math.min(
+                    supercluster.getClusterExpansionZoom(cluster.id), 20
+                  );
+                  setViewport({
+                    ...viewport,
+                    lat,
+                    long,
+                    zoom: expansionZoom,
+                    transitionInterpolator: new FlyToInterpolator({
+                      speed:2
+                    }),
+                    transitionDuration: "auto"
+                  })
+                }} 
+              >
+                {pointCount}
+              </div>
+            </Marker>
+          );
+        }
+
+        return (
+        <Marker 
+          key={cluster.properties.pinId}
+          latitude={lat}
+          longitude={long}
+        >
+        </Marker>
+        );
+        })}
 
       {pins.map(p=>(
     <>
       
       <Marker latitude={p.lat} longitude={p.long}>
-        <CityPin size={20} onClick={()=>handleMarkerClick(p._id, p.lat, p.long)}
+        <CityPin 
+          fill={'#d62'}
+          size={20} 
+          onClick={()=>handleMarkerClick(p._id, p.lat, p.long)}
         />
       </Marker>
       {p._id === currentPlaceId &&(

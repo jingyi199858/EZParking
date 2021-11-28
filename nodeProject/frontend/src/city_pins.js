@@ -6,7 +6,7 @@ const ICON = `M20.2,15.7L20.2,15.7c1.1-1.6,1.8-3.6,1.8-5.7c0-5.6-4.5-10-10-10S2,
 
 const pinStyle = {
   cursor: 'pointer',
-  fill: '#d00',
+  //fill: '#d00',
   stroke: 'none'
 };
 
@@ -19,7 +19,7 @@ export default class CityPin extends PureComponent {
       <svg 
         height={size}
         viewBox="0 0 24 24"
-        style={{...pinStyle, transform: `translate(${-size / 2}px,${-size}px)`}}
+        style={{...pinStyle, fill: this.props.fill, transform: `translate(${-size / 2}px,${-size}px)`}}
         onClick={onClick}
       >
         <path d={ICON}/>

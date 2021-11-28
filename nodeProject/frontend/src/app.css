@@ -81,3 +81,13 @@ input::placeholder, textarea::placeholder{
     right: 10px;
 }
 
+.cluster-marker {
+    color: #fff;
+    background: #1978c8;
+    border-radius: 50%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
