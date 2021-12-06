@@ -1,5 +1,5 @@
 # EZParking
-This project is a parking sharing app, running on web
+This project is a parking sharing app, running on a web browser
 
 How to run server
 
