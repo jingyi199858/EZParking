@@ -1,0 +1,5 @@
+nodeProject/backend/.env
+nodeProject/frontend/.env
+node_modules
+nodeProject/backend/node_modules
+nodeProject/frontend/node_modules
