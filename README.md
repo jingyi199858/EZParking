@@ -5,12 +5,22 @@ How to run server
 
 Go to backend
 
+```
 yarn install
+```
+```
 yarn start
+```
 
 Start another ternimal
 
 Go to frontend
 
+```
 yarn install
+```
+```
 yarn start
+```
+
+The front end will be running at http://localhost:3000/ by default
