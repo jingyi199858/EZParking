@@ -1,7 +1,14 @@
 # EZParking
 This project is a parking sharing app, running on a web browser
 
-How to run server
+Need to add your MongoDB connect key and MapBox API Key first.
+
+Find /nodeProject/backend/.env to add MongoDB connect key.
+Find /nodeProject/frontend/.env to add MapBox API Key.
+
+How to run server:
+
+Successfully add keys for both MongoDB and MapBox API
 
 Go to nodeProject/backend
 
