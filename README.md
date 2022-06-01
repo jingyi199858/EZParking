@@ -31,5 +31,3 @@ yarn start
 ```
 
 The front end will be running at http://localhost:3000/ by default
-
-Example running instance can be found at https://28ab-71-172-130-175.ngrok.io
